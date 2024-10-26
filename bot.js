@@ -1,15 +1,8 @@
-const { Telegraf, Markup } = require('telegraf');
+const { Telegraf } = require('telegraf');
+const bot = new Telegraf(process.env.YOUR_BOT_TOKEN);
 
-// Replace with your actual bot token
-const bot = new Telegraf(process.env.YOUR_BOT_TOKEN); // Use the environment variable
-
-// Start command handler
-bot.start((ctx) => {
-  ctx.reply('Hello! Please choose an option:', Markup.inlineKeyboard([
-    [Markup.button.callback('Option 1', 'option1')],
-    [Markup.button.callback('Option 2', 'option2')]
-  ]));
-});
+// Start command
+bot.start((ctx) => ctx.reply("Hello! I'm alive and polling for new updates!"));
 
 // Polling function that restarts every 5 seconds
 function startPolling() {
@@ -26,18 +19,11 @@ function startPolling() {
     bot.stop();
     startPolling();
   }, 5000);
-},
+}
+
+// Start polling for the first time
 startPolling();
 
-// Callback query handler
-bot.action('option1', (ctx) => {
-  ctx.answerCbQuery('You chose Option 1!');
-});
-
-bot.action('option2', (ctx) => {
-  ctx.answerCbQuery('You chose Option 2!');
-});
-
-// Start the bot
-bot.launch();
-startPolling();
+// Graceful stop for Render
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
