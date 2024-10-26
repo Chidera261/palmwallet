@@ -18,7 +18,7 @@ function startPolling() {
   setTimeout(() => {
     bot.stop();
     startPolling();
-  }, 5000);
+  }, 10000);
 }
 
 // Start polling for the first time
