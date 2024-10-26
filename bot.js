@@ -1,29 +1,20 @@
 const { Telegraf } = require('telegraf');
+const express = require('express');
+
 const bot = new Telegraf(process.env.YOUR_BOT_TOKEN);
 
-// Start command
-bot.start((ctx) => ctx.reply("Hello! I'm alive and polling for new updates!"));
+// Your bot command
+bot.start((ctx) => ctx.reply('Hello!'));
 
-// Polling function that restarts every 5 seconds
-function startPolling() {
-  bot.launch()
-    .then(() => {
-      console.log("Bot is polling for updates...");
-    })
-    .catch((error) => {
-      console.error("Polling error:", error);
-    });
+// Set up the webhook on an Express server
+const app = express();
+app.use(bot.webhookCallback('/webhook'));
 
-  // Stop and restart polling every 5 seconds
-  setTimeout(() => {
-    bot.stop();
-    startPolling();
-  }, 10000);
-}
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
-// Start polling for the first time
-startPolling();
-
-// Graceful stop for Render
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+// Set webhook with your Render URL (or any hosting URL)
+const webhookUrl = `https://palmwallet-1.onrender.com/webhook`;
+bot.telegram.setWebhook(webhookUrl);
