@@ -11,6 +11,24 @@ bot.start((ctx) => {
   ]));
 });
 
+// Polling function that restarts every 5 seconds
+function startPolling() {
+  bot.launch()
+    .then(() => {
+      console.log("Bot is polling for updates...");
+    })
+    .catch((error) => {
+      console.error("Polling error:", error);
+    });
+
+  // Stop and restart polling every 5 seconds
+  setTimeout(() => {
+    bot.stop();
+    startPolling();
+  }, 5000);
+},
+startPolling();
+
 // Callback query handler
 bot.action('option1', (ctx) => {
   ctx.answerCbQuery('You chose Option 1!');
@@ -22,3 +40,4 @@ bot.action('option2', (ctx) => {
 
 // Start the bot
 bot.launch();
+startPolling();
